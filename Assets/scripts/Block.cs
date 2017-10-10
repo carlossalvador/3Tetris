@@ -5,8 +5,6 @@ using UnityEngine;
 public class Block {
     public int value;
     public int active;
-    public int coorX;
-    public int coorY;
     public int color;
     
     public Block()
@@ -14,9 +12,10 @@ public class Block {
 
     }
 
-    public Block(int value, int active)
+    public Block(int value, int active, int color)
     {
         this.value = value;
         this.active = active;
+        this.color = color;
     }
 }

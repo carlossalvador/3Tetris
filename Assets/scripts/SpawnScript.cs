@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class SpawnScript : MonoBehaviour {
 
-    //pieces are reference in Unity object inspector
-    public GameObject[] pieces;
+    //matrix is referenced in Unity object inspector
     private int[,,] intPieces;
-    private Color[] colors = new Color[3];
-    public MatrixScript matrix;
+    public MatrixScript mainMatrix;
+    public NextPieceScript previewMatrix;
+    public GameControllerScript gameController;
+    private int randomPiece;
+    private int randomColor;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         //Generate pieces
         intPieces = new int[,,] {
             {//L
@@ -57,40 +59,49 @@ public class SpawnScript : MonoBehaviour {
                 {1, 0, 0, 0},
             }
         };
-
-        //Generate 3 new random colors
-        for (int i = 0; i < 3; i++)
-        {
-            colors[i] = new Color(Random.Range(0.5f, 1.0f), Random.Range(0.5f, 1.0f), Random.Range(0.5f, 1.0f));
-        }
-        
+                
         //check first random piece
-        newPiece();
-	}
-	
-    //generate a new random piece in spawn area
-    public void newPiece()
-    {
-        //select a random color and piece
-        int rndPiece = Random.Range(0, pieces.Length);
-        int rndColor = Random.Range(0, colors.Length);
-        ////new instance of piece, spawn point position is set in Unity inspector, Quaternion.identity is to not rotate sprite
-        //GameObject piece = Instantiate(pieces[rndPiece], transform.position, Quaternion.identity);
-        ////paint piece's blocks with random color
-        //foreach(SpriteRenderer block in piece.GetComponentsInChildren<SpriteRenderer>())
-        //{
-        //    block.color = colors[rndColor];
-        //}
+        NewPiece();
+        GetPreviewPiece();
 
-        int randomPiece = Random.Range(0, intPieces.GetLength(0));
-        print(randomPiece);
+    }
+
+    public void GetPreviewPiece()
+    {
         for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < 4; j++)
             {
-                matrix.createBlock(j + 4, 16 - i, intPieces[randomPiece, i, j], intPieces[randomPiece, i, j]);
+                if (intPieces[randomPiece, i, j] == 1)
+                {
+                    Block block = new Block(1, 1, randomColor);
+                    mainMatrix.CreateBlock(block, j + 4, 16 - i);
+                }
             }
         }
 
+        gameController.returnSpawnArea();
+        previewMatrix.DeletePiece();
+        NewPiece();
+    }
+	
+    //generate a new random piece in spawn area
+    public void NewPiece()
+    {
+        //select a random color and piece
+        randomColor = Random.Range(0, 3);
+        randomPiece = Random.Range(0, intPieces.GetLength(0));
+                
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (intPieces[randomPiece, i, j] == 1)
+                {
+                    Block block = new Block(1, 1, randomColor);
+                    previewMatrix.CreateBlock(block, j, 4 - i);
+                }
+            }
+        }
     }
 }
