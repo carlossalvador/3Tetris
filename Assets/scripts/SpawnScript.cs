@@ -91,7 +91,6 @@ public class SpawnScript : MonoBehaviour {
         //select a random color and piece
         randomColor = Random.Range(0, 3);
         randomPiece = Random.Range(0, intPieces.GetLength(0));
-                
         for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < 4; j++)

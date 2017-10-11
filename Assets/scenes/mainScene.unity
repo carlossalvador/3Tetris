@@ -2611,68 +2611,6 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
---- !u!1 &398797856
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 398797859}
-  - component: {fileID: 398797858}
-  - component: {fileID: 398797857}
-  m_Layer: 0
-  m_Name: EventSystem
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &398797857
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 398797856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1077351063, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
---- !u!114 &398797858
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 398797856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -619905303, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_FirstSelected: {fileID: 0}
-  m_sendNavigationEvents: 1
-  m_DragThreshold: 5
---- !u!4 &398797859
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 398797856}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 14
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &410778412
 GameObject:
   m_ObjectHideFlags: 0
@@ -2705,7 +2643,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 317.5, y: 96.6}
+  m_AnchoredPosition: {x: 356.6, y: 107.9}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &410778414
@@ -3401,6 +3339,9 @@ MonoBehaviour:
   block: {fileID: 1083404354037514, guid: 9c2ad2a474c2cb7489fb0280c41d5511, type: 2}
   spawn: {fileID: 1656514124}
   gameController: {fileID: 836275822}
+  otherMatrixs:
+  - {fileID: 1379603996}
+  - {fileID: 2118557035}
 --- !u!4 &494373216
 Transform:
   m_ObjectHideFlags: 0
@@ -6062,9 +6003,9 @@ MonoBehaviour:
   - {fileID: 1379603996}
   - {fileID: 2118557035}
   - {fileID: 494373215}
-  maxDelay: 20
+  maxDelay: 40
   maxControlDelay: 8
-  levels: 3
+  levels: 1
   scoreText: {fileID: 1711176542}
 --- !u!4 &836275823
 Transform:
@@ -10003,6 +9944,9 @@ MonoBehaviour:
   block: {fileID: 1083404354037514, guid: 9c2ad2a474c2cb7489fb0280c41d5511, type: 2}
   spawn: {fileID: 1656514124}
   gameController: {fileID: 836275822}
+  otherMatrixs:
+  - {fileID: 2118557035}
+  - {fileID: 494373215}
 --- !u!4 &1379603997
 Transform:
   m_ObjectHideFlags: 0
@@ -11822,6 +11766,9 @@ MonoBehaviour:
   block: {fileID: 1083404354037514, guid: 9c2ad2a474c2cb7489fb0280c41d5511, type: 2}
   spawn: {fileID: 1656514124}
   gameController: {fileID: 836275822}
+  otherMatrixs:
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!4 &1572623570
 Transform:
   m_ObjectHideFlags: 0
@@ -12805,9 +12752,9 @@ RectTransform:
   m_Father: {fileID: 1259195870}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -82, y: -191.6}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 357.1, y: 87}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1711176542
@@ -13817,7 +13764,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 318, y: -2.6999998}
+  m_AnchoredPosition: {x: 357.9, y: -2.6999998}
   m_SizeDelta: {x: 67.8, y: 44.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1873301748
@@ -16100,6 +16047,9 @@ MonoBehaviour:
   block: {fileID: 1083404354037514, guid: 9c2ad2a474c2cb7489fb0280c41d5511, type: 2}
   spawn: {fileID: 1656514124}
   gameController: {fileID: 836275822}
+  otherMatrixs:
+  - {fileID: 1379603996}
+  - {fileID: 494373215}
 --- !u!4 &2118557036
 Transform:
   m_ObjectHideFlags: 0

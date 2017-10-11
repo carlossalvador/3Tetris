@@ -13,9 +13,10 @@ public class MatrixScript : MonoBehaviour {
     private int delay = 0;
     public int blocksColor;
 
-    public GameObject block;
+    public GameObject blockPrefab;
     public SpawnScript spawn;
     public GameControllerScript gameController;
+    public MatrixScript[] otherMatrixs = new MatrixScript[2];
 
     public GameObject[,] cellsObjects = new GameObject[columns, rows];
     public Block[,] cells = new Block[columns, rows];
@@ -181,7 +182,6 @@ public class MatrixScript : MonoBehaviour {
                         if (IsCellUse(j, i - 1))
                         {
                             isLanding = true;
-                            break;
                         }
                     }
                 }
@@ -214,30 +214,117 @@ public class MatrixScript : MonoBehaviour {
             LandPiece();
     }
 
+    private void DividePenaltyPiece(Block[] penaltiesBlocks)
+    {
+        int piecesRemoved = 0;
+        for (int i = rows - 1; i > 0; i--)
+        {
+            for (int j = 0; j < columns; j++)
+            {
+                for (int x = penaltiesBlocks.Length - 1; x > 0; x--)
+                {
+                    if (piecesRemoved < 2 && cells[j, i] == penaltiesBlocks[x])
+                    {
+                        cells[j, i] = null;
+                        piecesRemoved++;
+                    }
+                }
+            }
+        }
+    }
+
+    void AddPenaltyBlocks()
+    {
+        for (int m = 0; m < otherMatrixs.Length; m++)
+        {
+            int randomColumn = UnityEngine.Random.Range(0, 9);
+            for (int j = rows - 2; j >= 0; j--)
+            {
+                Block checkBlock = otherMatrixs[m].cells[randomColumn, j];
+                if (checkBlock != null && checkBlock.value == 1)
+                {
+                    Block penaltyBlocks = new Block(1, 0, blocksColor);
+                    otherMatrixs[m].CreateBlock(penaltyBlocks, randomColumn, j + 1);
+                    break;
+                } else
+                {
+                    if (j - 1 == -1)
+                    {
+                        Block penaltyBlocks = new Block(1, 0, blocksColor);
+                        otherMatrixs[m].CreateBlock(penaltyBlocks, randomColumn, j);
+                    }
+                }
+            }
+        }
+    }
+
+    void RemovePenaltyBlocks()
+    {
+        for (int m = 0; m < otherMatrixs.Length; m++)
+        {
+            for (int i = rows - 1; i >= 0; i--)
+            {
+                for (int j = 0; j < columns; j++)
+                {
+                    Block blockToRemove = otherMatrixs[m].cells[j, i];
+                    if (blockToRemove!= null && blockToRemove.color != otherMatrixs[m].blocksColor)
+                    {
+                        otherMatrixs[m].cells[j, i] = null;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     void LandPiece()
     {
+        bool isPenalty = false;
+        int penalties = 0;
+        Block[] penaltiesBlocks = new Block[4];
+
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < columns; j++)
             {
                 if (cells[j, i] != null)
-                    cells[j, i].active = 0;
+                {
+                    if (cells[j, i].active == 1)
+                    {
+                        if (cells[j, i].color != blocksColor)
+                        {
+                            isPenalty = true;
+                            if (penalties < 4)
+                            {
+                                penaltiesBlocks[penalties] = cells[j, i];
+                                penalties++;
+                            }
+                        }
+                        cells[j, i].active = 0;
+                    }
+                }
             }
         }
 
-        CheckFullRows();
+        if (isPenalty)
+        {
+            DividePenaltyPiece(penaltiesBlocks);
+            AddPenaltyBlocks();
+        }
+        else
+            CheckFullRows();
+
         spawn.GetPreviewPiece();
     }
 
     void StartBlocks()
     {
-        for (int i = 0; i < gameController.levels; i++)
+        for (int i = 0; i < gameController.startRows; i++)
         {
             for (int j = 0; j < 5; j++)
             {
                 Block block = new Block(1, 0, blocksColor);
                 CreateBlock(block, UnityEngine.Random.Range(0, 10), i);
-                //createBlock(block, j, i);
             }
         }
     }
@@ -249,7 +336,7 @@ public class MatrixScript : MonoBehaviour {
             bool isFull = true;
             for (int j = 0; j < columns; j++)
             {
-                if (cells[j, i] == null || cells[j, i].value == 0)
+                if (cells[j, i] == null || cells[j, i].value == 0 || cells[j, i].color != blocksColor)
                     isFull = false;
             }
             if (isFull)
@@ -260,6 +347,7 @@ public class MatrixScript : MonoBehaviour {
                 }
                 MoveDownRows(i);
                 gameController.updateScore(1);
+                RemovePenaltyBlocks();
                 i--;
             }
         }
@@ -285,7 +373,7 @@ public class MatrixScript : MonoBehaviour {
                 {
                     if (cellsObjects[j, i] == null)
                     {
-                        cellsObjects[j, i] = Instantiate(block, new Vector3(PositionX(j), PositionY(i), 0), Quaternion.identity);
+                        cellsObjects[j, i] = Instantiate(blockPrefab, new Vector3(PositionX(j), PositionY(i), 0), Quaternion.identity);
                         ColorBlocks(cells[j, i], cellsObjects[j, i]);
                     }
                 }
@@ -332,4 +420,9 @@ public class MatrixScript : MonoBehaviour {
     }
 
     #endregion
+
+    void PrintCoords(int x, int y)
+    {
+        print("block coords x = " + x + " y = " + y);
+    }
 }
