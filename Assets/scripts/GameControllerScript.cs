@@ -1,34 +1,48 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameControllerScript : MonoBehaviour {
 
     public MatrixScript[] matrixCollection = new MatrixScript[3];
     private int currentMatrix;
+    public Text gameOver;
+    public Button goBack;
+    public Button restart;
 
-    public int level;
+    public static int level;
     public int maxDelay;
     public int maxControlDelay;
     public int startRows;
     private int controlDelay;
-    private bool readyLeft = false;
-    private bool readyRight = false;
+    private int gameOverTimer;
+    private bool readyLeft;
+    private bool readyRight;
     private bool readyChangeGameArea;
+    private bool readyDown;
 
     static private int score;
-    public Text scoreText;
-
-    private void Awake()
-    {
-        Screen.SetResolution(900, 600, false);
-    }
+    public Text scoreText;    
 
     // Use this for initialization
     void Start () {
         currentMatrix = 1;
-	}
+        startRows = level;
+        switch (level)
+        {
+            case 2:
+                maxDelay = 20;
+                break;
+            case 1:
+                maxDelay = 35;
+                break;
+            default:
+                maxDelay = 50;
+                break;
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -42,11 +56,16 @@ public class GameControllerScript : MonoBehaviour {
             readyRight = true;
         }
 
+        if (Input.GetKey("down"))
+        {
+            readyDown = true;
+        }
+
         if (Input.GetKeyDown("space"))
         {
             readyChangeGameArea = true;
         }
-
+        
         if (controlDelay < maxControlDelay)
             controlDelay++;
         else
@@ -64,6 +83,12 @@ public class GameControllerScript : MonoBehaviour {
                 readyLeft = false;
             }
 
+            if (readyDown)
+            {
+                matrixCollection[currentMatrix].DownActive();
+                readyDown = false;
+            }
+
             if (readyChangeGameArea)
             {
                 int nextMatrix = currentMatrix < 2 ? currentMatrix + 1 : 0;
@@ -72,6 +97,8 @@ public class GameControllerScript : MonoBehaviour {
                 readyChangeGameArea = false;
             }
         }
+
+        CheckGameOver();
     }
 
     public void returnSpawnArea()
@@ -83,5 +110,35 @@ public class GameControllerScript : MonoBehaviour {
     {
         score += addScore;
         scoreText.text = score.ToString();
+    }
+
+    void CheckGameOver()
+    {
+        bool isStuck = false;
+        for (int i = 0; i < 10; i++)
+        {
+            if (matrixCollection[1].cells[i, 16] != null && matrixCollection[1].cells[i, 16].value == 1)
+            {
+                isStuck = true;
+            }
+            
+        }
+
+        if (isStuck)
+        {
+            if (gameOverTimer < 80)
+                gameOverTimer++;
+            else
+                GameOver();
+        }
+        else
+            gameOverTimer = 0;
+    }
+
+    void GameOver()
+    {
+        gameOver.gameObject.SetActive(true);
+        restart.gameObject.SetActive(true);
+        goBack.gameObject.transform.SetPositionAndRotation(new Vector3(385, 235), Quaternion.identity);
     }
 }
