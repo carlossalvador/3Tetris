@@ -5,21 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class SceneScript : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
+	// Reload game screen
     public void RestartGame()
     {
         SceneManager.LoadScene("mainScene");
     }
 
+    // Go to title screen
     public void GoBack()
     {
         SceneManager.LoadScene("titleScene");

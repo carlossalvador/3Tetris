@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Block {
+    //properties to mark blocks, value is a occupied block, active are the falling blocks. And last property is color of the block.
     public int value;
     public int active;
     public int color;
@@ -12,6 +13,7 @@ public class Block {
 
     }
 
+    //Constructor with all properties
     public Block(int value, int active, int color)
     {
         this.value = value;

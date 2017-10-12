@@ -4,68 +4,75 @@ using UnityEngine;
 
 public class SpawnScript : MonoBehaviour {
 
-    //matrix is referenced in Unity object inspector
+    // Array with pieces patrons
     private int[,,] intPieces;
+
+    // Matrix with spawn point
     public MatrixScript mainMatrix;
+
+    // Matrix where next piece will be show
     public NextPieceScript previewMatrix;
+
+    // This reference is use to reset the active matrix
     public GameControllerScript gameController;
+
+    // Store the piece generated in next piece matrix
     private int randomPiece;
     private int randomColor;
 
-    // Use this for initialization
+    // Set pieces patrons and generate first piece in preview and spawn point
     void Start () {
         //Generate pieces
         intPieces = new int[,,] {
-            {//L
+            {// L
                 {1, 0, 0, 0},
                 {1, 0, 0, 0},
                 {1, 1, 0, 0},
                 {0, 0, 0, 0},
             },
-            {//O
+            {// O
                 {1, 1, 0, 0},
                 {1, 1, 0, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
             },
-            {//J
+            {// J
                 {0, 1, 0, 0},
                 {0, 1, 0, 0},
                 {1, 1, 0, 0},
                 {0, 0, 0, 0},
             },
-            {//Z
+            {// Z
                 {1, 1, 0, 0},
                 {0, 1, 1, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
             },
-            {//S
+            {// S
                 {0, 1, 1, 0},
                 {1, 1, 0, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
             },
-            {//T
+            {// T
                 {1, 1, 1, 0},
                 {0, 1, 0, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
             },
-            {//I
+            {// I
                 {1, 0, 0, 0},
                 {1, 0, 0, 0},
                 {1, 0, 0, 0},
                 {1, 0, 0, 0},
             }
         };
-                
-        //check first random piece
+
         NewPiece();
         GetPreviewPiece();
-
     }
 
+    // Get next piece and send to spawn point
     public void GetPreviewPiece()
     {
         for (int i = 0; i < 4; i++)
@@ -85,7 +92,7 @@ public class SpawnScript : MonoBehaviour {
         NewPiece();
     }
 	
-    //generate a new random piece in spawn area
+    // Generate a new random piece in next piece area
     public void NewPiece()
     {
         //select a random color and piece

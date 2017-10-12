@@ -3530,7 +3530,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetX: 1.3
   offsetY: -2.65
-  blocksColor: 2
+  areaColor: 2
   blockPrefab: {fileID: 1083404354037514, guid: 9c2ad2a474c2cb7489fb0280c41d5511,
     type: 2}
   spawn: {fileID: 1656514124}
@@ -6202,9 +6202,9 @@ MonoBehaviour:
   gameOver: {fileID: 179561457}
   goBack: {fileID: 397656555}
   restart: {fileID: 475091753}
-  maxDelay: 40
+  maxDelay: 10
   maxControlDelay: 8
-  startRows: 0
+  startRows: 3
   scoreText: {fileID: 1711176542}
 --- !u!4 &836275823
 Transform:
@@ -10536,7 +10536,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetX: -6.7
   offsetY: -2.65
-  blocksColor: 0
+  areaColor: 0
   blockPrefab: {fileID: 1083404354037514, guid: 9c2ad2a474c2cb7489fb0280c41d5511,
     type: 2}
   spawn: {fileID: 1656514124}
@@ -12359,7 +12359,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetX: 5.45
   offsetY: -2.66
-  blocksColor: 0
+  areaColor: 0
   blockPrefab: {fileID: 1083404354037514, guid: 9c2ad2a474c2cb7489fb0280c41d5511,
     type: 2}
   spawn: {fileID: 1656514124}
@@ -16703,7 +16703,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetX: -2.7
   offsetY: -2.65
-  blocksColor: 1
+  areaColor: 1
   blockPrefab: {fileID: 1083404354037514, guid: 9c2ad2a474c2cb7489fb0280c41d5511,
     type: 2}
   spawn: {fileID: 1656514124}

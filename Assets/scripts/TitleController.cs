@@ -10,31 +10,25 @@ public class TitleController : MonoBehaviour {
     private int level = 0;
     public Text levelText;
 
+    // Set window resolution and set no fullscreen
     private void Awake()
     {
         Screen.SetResolution(900, 600, false);
     }
-
-    // Use this for initialization
-    void Start () {
-        
-    }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
+    
+    // Go to game screen
     public void StartGame()
     {
         SceneManager.LoadScene("mainScene");
     }
 
+    // Go to instructions screen
     public void LoadInstructions()
     {
         SceneManager.LoadScene("instructionsScene");
     }
 
+    // Up difficulty level
     public void UpLevel()
     {
         if (level < 2)
@@ -49,6 +43,7 @@ public class TitleController : MonoBehaviour {
         UpdateLevel();
     }
 
+    // Down difficulty level
     public void DownLevel()
     {
         if (level > 0)
@@ -63,6 +58,7 @@ public class TitleController : MonoBehaviour {
         UpdateLevel();
     }
 
+    // Update difficult level in game controller and show in title message
     private void UpdateLevel()
     {
         GameControllerScript.level = level;

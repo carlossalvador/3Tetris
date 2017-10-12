@@ -5,28 +5,40 @@ using UnityEngine;
 
 public class MatrixScript : MonoBehaviour {
 
+    // Matrix dimensions
     public static int rows = 17;
     public static int columns = 10;
+
+    // Offsets for draw in screen
     public float offsetX;
     public float offsetY;
     private float scale = 0.333f;
-    private int delay = 0;
-    public int blocksColor;
 
+    // Delay to move falling piece
+    private int delay = 0;
+
+    // Color of game area
+    public int areaColor;
+
+    // Sprite generated in unity for blocks
     public GameObject blockPrefab;
+
+    // Reference to spawn controller, set here to notify when a new block is need
     public SpawnScript spawn;
+
+    // Reference to get difficulty parameters
     public GameControllerScript gameController;
+
+    // References to other matrixs or areas, will be use in penalties
     public MatrixScript[] otherMatrixs = new MatrixScript[2];
 
+    // Matrix of Unity GameObject to draw
     public GameObject[,] cellsObjects = new GameObject[columns, rows];
+
+    // Matrix of Block class where logic is
     public Block[,] cells = new Block[columns, rows];
-    
-    // Use this for initialization
-    void Start () {
-        StartBlocks();
-    }
-	
-	// Update is called once per frame
+    	
+	// Draw blocks in frame updating and set a delay to move down falling piece
 	void Update () {
         if (delay < gameController.maxDelay)
         {
@@ -41,6 +53,7 @@ public class MatrixScript : MonoBehaviour {
 
     #region CONTROLLERS
     
+    // Move falling piece at left, check first if some blocks are there
     public void MoveLeft()
     {
         bool isBlocked = false;
@@ -80,6 +93,7 @@ public class MatrixScript : MonoBehaviour {
         }
     }
 
+    // Move falling piece at right, check first if some blocks are there
     public void MoveRight()
     {
         bool isBlocked = false;
@@ -118,7 +132,10 @@ public class MatrixScript : MonoBehaviour {
             }
         }
     }
-    
+
+    // coorX: cordinate for X axis or columns
+    // coorY: cordinate for Y axis or rows
+    // Check if a cell is ocupied by a block
     bool IsCellUse(int coorX, int coorY)
     {
         if (cells[coorX, coorY] == null)
@@ -127,6 +144,8 @@ public class MatrixScript : MonoBehaviour {
             return (cells[coorX, coorY].value == 1 & cells[coorX, coorY].active == 0);
     }
     
+    // deletedRow: number of row completed
+    // When a row is completed, the rows above will fall down one block
     void MoveDownRows(int deletedRow)
     {
         for (int i = deletedRow; i < rows; i++)
@@ -145,6 +164,8 @@ public class MatrixScript : MonoBehaviour {
         }
     }
 
+    // targetMatrix: Matrix reference to switch falling piece
+    // Switch piece to another matrix or game area.
     public void ChangeGameArea(MatrixScript targetMatrix)
     {
         for (int i = 0; i < rows; i++)
@@ -167,6 +188,7 @@ public class MatrixScript : MonoBehaviour {
 
     #region GAME
 
+    // Down the blocks of falling piece
     public void DownActive()
     {
         bool isLanding = false;
@@ -214,6 +236,8 @@ public class MatrixScript : MonoBehaviour {
             LandPiece();
     }
 
+    // penaltiesBlocks: blocks of piece that fall in wrong area
+    // Remove 2 blocks from penalty piece
     private void DividePenaltyPiece(Block[] penaltiesBlocks)
     {
         int piecesRemoved = 0;
@@ -233,6 +257,7 @@ public class MatrixScript : MonoBehaviour {
         }
     }
 
+    // Add one block to each other matrix
     void AddPenaltyBlocks()
     {
         for (int m = 0; m < otherMatrixs.Length; m++)
@@ -243,14 +268,14 @@ public class MatrixScript : MonoBehaviour {
                 Block checkBlock = otherMatrixs[m].cells[randomColumn, j];
                 if (checkBlock != null && checkBlock.value == 1)
                 {
-                    Block penaltyBlocks = new Block(1, 0, blocksColor);
+                    Block penaltyBlocks = new Block(1, 0, areaColor);
                     otherMatrixs[m].CreateBlock(penaltyBlocks, randomColumn, j + 1);
                     break;
                 } else
                 {
                     if (j - 1 == -1)
                     {
-                        Block penaltyBlocks = new Block(1, 0, blocksColor);
+                        Block penaltyBlocks = new Block(1, 0, areaColor);
                         otherMatrixs[m].CreateBlock(penaltyBlocks, randomColumn, j);
                     }
                 }
@@ -258,6 +283,7 @@ public class MatrixScript : MonoBehaviour {
         }
     }
 
+    // When a row is completed in the other matrix one penalty block will be remove
     void RemovePenaltyBlocks()
     {
         for (int m = 0; m < otherMatrixs.Length; m++)
@@ -267,7 +293,7 @@ public class MatrixScript : MonoBehaviour {
                 for (int j = 0; j < columns; j++)
                 {
                     Block blockToRemove = otherMatrixs[m].cells[j, i];
-                    if (blockToRemove!= null && blockToRemove.color != otherMatrixs[m].blocksColor)
+                    if (blockToRemove!= null && blockToRemove.color != otherMatrixs[m].areaColor)
                     {
                         otherMatrixs[m].cells[j, i] = null;
                         break;
@@ -277,6 +303,7 @@ public class MatrixScript : MonoBehaviour {
         }
     }
 
+    // When a piece is landing the blocks are marked as inactive or divide if it's not of color area
     void LandPiece()
     {
         bool isPenalty = false;
@@ -291,7 +318,7 @@ public class MatrixScript : MonoBehaviour {
                 {
                     if (cells[j, i].active == 1)
                     {
-                        if (cells[j, i].color != blocksColor)
+                        if (cells[j, i].color != areaColor)
                         {
                             isPenalty = true;
                             if (penalties < 4)
@@ -317,18 +344,20 @@ public class MatrixScript : MonoBehaviour {
         spawn.GetPreviewPiece();
     }
 
-    void StartBlocks()
+    // Random blocks are generate in columns, number of rows depends on difficulty
+    public void StartBlocks()
     {
         for (int i = 0; i < gameController.startRows; i++)
         {
             for (int j = 0; j < 5; j++)
             {
-                Block block = new Block(1, 0, blocksColor);
+                Block block = new Block(1, 0, areaColor);
                 CreateBlock(block, UnityEngine.Random.Range(0, 10), i);
             }
         }
     }
 
+    // Check if a row is complete or full with pieces of area color
     void CheckFullRows()
     {
         for (int i = 0; i < rows; i++)
@@ -336,7 +365,7 @@ public class MatrixScript : MonoBehaviour {
             bool isFull = true;
             for (int j = 0; j < columns; j++)
             {
-                if (cells[j, i] == null || cells[j, i].value == 0 || cells[j, i].color != blocksColor)
+                if (cells[j, i] == null || cells[j, i].value == 0 || cells[j, i].color != areaColor)
                     isFull = false;
             }
             if (isFull)
@@ -352,17 +381,22 @@ public class MatrixScript : MonoBehaviour {
             }
         }
     }
-    
+
     #endregion
 
     #region DRAWING
 
+    // block: instance of block which be add to matrix
+    // coorX: X axis coordinate or columns
+    // coorY: Y axis coordinate or rows
+    // Create a block in coordinates gived
     public void CreateBlock(Block block, int coorX, int coorY)
     {
         if (cells[coorX, coorY] == null || cells[coorX, coorY].value == 0)
             cells[coorX, coorY] = block;
     }
 
+    // Draw the blocks and delete blocks with zero value
     public void DrawBlocks()
     {
         for (int i = 0; i < rows; i++)
@@ -387,6 +421,9 @@ public class MatrixScript : MonoBehaviour {
         }
     }
 
+    // block: block which color will be get
+    // gObject: Unity game object which color will be change
+    // Color blocks in drawing
     void ColorBlocks(Block block, GameObject gObject)
     {
         Color c;
@@ -409,11 +446,15 @@ public class MatrixScript : MonoBehaviour {
         }
     }
 
+    // coordinate: X axis in screen
+    // position in X axis in sreen add scale of sprites and offset
     float PositionX(int coordinate)
     {
         return coordinate * scale + offsetX;
     }
 
+    // coordinate: Y axis in screen
+    // position in Y axis in sreen add scale of sprites and offset
     float PositionY(int coordinate)
     {
         return coordinate * scale + offsetY;
@@ -421,6 +462,9 @@ public class MatrixScript : MonoBehaviour {
 
     #endregion
 
+    // x: X axis of block
+    // y: Y axis of block
+    // Print coordinates of any block. Only for debug porpuses.
     void PrintCoords(int x, int y)
     {
         print("block coords x = " + x + " y = " + y);
