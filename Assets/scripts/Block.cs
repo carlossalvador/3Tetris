@@ -7,17 +7,28 @@ public class Block {
     public int value;
     public int active;
     public int color;
+    public string owner;
     
     public Block()
     {
 
     }
 
-    //Constructor with all properties
+    //Constructor without owner
     public Block(int value, int active, int color)
     {
         this.value = value;
         this.active = active;
         this.color = color;
+        owner = "";
+    }
+
+    //Constructor with all properties
+    public Block(int value, int active, int color, string owner)
+    {
+        this.value = value;
+        this.active = active;
+        this.color = color;
+        this.owner = owner;
     }
 }

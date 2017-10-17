@@ -8,25 +8,17 @@ public class GameControllerScript : MonoBehaviour {
 
     // Array with the 3 game areas
     public MatrixScript[] matrixCollection = new MatrixScript[3];
-    // Game area where falling piece are
-    private int currentMatrix;
     // Objects in game over message
     public Text gameOver;
     public Button goBack;
     public Button restart;
 
-    // Difficulty variables
-    public static int level;
     // Delay to drop falling piece one row
     public int maxDelay;
-    // Variables for better experience in user controls
-    public int maxControlDelay;
-    private int controlDelay;
-    private bool readyLeft;
-    private bool readyRight;
-    private bool readyChangeGameArea;
-    private bool readyDown;
-    private bool readyRotate;
+
+    // Difficulty variables
+    public static int level;
+
     // Number of rows with random pieces on game start
     public int startRows;
     
@@ -35,6 +27,7 @@ public class GameControllerScript : MonoBehaviour {
 
     // Score counter
     static private int score;
+
     // To show score message
     public Text scoreText;
 
@@ -42,7 +35,6 @@ public class GameControllerScript : MonoBehaviour {
     // With less delay pieces will fall faster and make game harder.
     // Start the matrix with some blocks if difficult is high.
     void Start () {
-        currentMatrix = 1;
         startRows = level;
         switch (level)
         {
@@ -56,7 +48,6 @@ public class GameControllerScript : MonoBehaviour {
                 maxDelay = 50;
                 break;
         }
-
         for (int i = 0; i < matrixCollection.Length; i++)
         {
             matrixCollection[i].StartBlocks();
@@ -65,79 +56,49 @@ public class GameControllerScript : MonoBehaviour {
 	
 	// In every frame user controls are check and after a little delay actions are execute
 	void Update () {
-        if (Input.GetKey("left"))
-        {
-            readyLeft = true;
-        }
-
-        if (Input.GetKey("right"))
-        {
-            readyRight = true;
-        }
-
-        if (Input.GetKey("down"))
-        {
-            readyDown = true;
-        }
-
-        if (Input.GetKeyDown("space"))
-        {
-            readyChangeGameArea = true;
-        }
-
-        if (Input.GetKeyDown("r"))
-        {
-            readyRotate = true;
-        }
-        
-        if (controlDelay < maxControlDelay)
-            controlDelay++;
-        else
-        {
-            controlDelay = 0;
-            if (readyRight)
-            {
-                matrixCollection[currentMatrix].MoveRight();
-                readyRight = false;
-            }
-
-            if (readyLeft)
-            {
-                matrixCollection[currentMatrix].MoveLeft();
-                readyLeft = false;
-            }
-
-            if (readyDown)
-            {
-                matrixCollection[currentMatrix].DownActive();
-                readyDown = false;
-            }
-
-            if (readyChangeGameArea)
-            {
-                int nextMatrix = currentMatrix < 2 ? currentMatrix + 1 : 0;
-                matrixCollection[currentMatrix].ChangeGameArea(matrixCollection[nextMatrix]);
-                currentMatrix = nextMatrix;
-                readyChangeGameArea = false;
-            }
-
-            if (readyRotate)
-            {
-                foreach (var matrix in matrixCollection)
-                {
-                    matrix.RotateGameArea();
-                }
-                readyRotate = false;
-            }
-        }
-        
         CheckGameOver();
     }
 
-    // When a piece lands, middle area (spawn point) is set like active area
-    public void ReturnSpawnArea()
+    // matrix: matrix where is falling piece
+    // owner: player who will move piece to left
+    // Move active piece to left
+    public void MoveToLeft(int matrix, string owner)
     {
-        currentMatrix = 1;
+        matrixCollection[matrix].MoveLeft(owner);
+    }
+
+    // matrix: matrix where is falling piece
+    // owner: player who will move piece to right
+    // Move active piece to right
+    public void MoveToRight(int matrix, string owner)
+    {
+        matrixCollection[matrix].MoveRight(owner);
+    }
+
+    // matrix: matrix where is falling piece
+    // owner: player who will move piece down
+    // Move active piece down
+    public void MoveToDown(int matrix, string owner)
+    {
+        matrixCollection[matrix].DownActive(owner);
+    }
+
+    // matrix: matrix where is falling piece
+    // nextMatrix: matrix where piece will go
+    // owner: player who will change piece
+    // Move a piece to another game area
+    public bool ChangeGameArea(int matrix, int nextMatrix, string owner)
+    {
+        return matrixCollection[matrix].ChangeGameArea(matrixCollection[nextMatrix], owner);
+    }
+
+    //Rotate game areas feature
+    public void RotateAreas()
+    {
+        foreach (var matrix in matrixCollection)
+        {
+            matrix.RotateGameArea();
+        }
     }
 
     // addScore: points to be added
@@ -158,7 +119,6 @@ public class GameControllerScript : MonoBehaviour {
             {
                 isStuck = true;
             }
-            
         }
 
         if (isStuck)

@@ -26,6 +26,7 @@ public class MatrixScript : MonoBehaviour {
 
     // Reference to spawn controller, set here to notify when a new block is need
     public SpawnScript spawn;
+    public SpawnScript spawnIA;
 
     // Reference to get difficulty parameters
     public GameControllerScript gameController;
@@ -38,24 +39,26 @@ public class MatrixScript : MonoBehaviour {
 
     // Matrix of Block class where logic is
     public Block[,] cells = new Block[columns, rows];
-    	
-	// Draw blocks in frame updating and set a delay to move down falling piece
-	void Update () {
+
+    // Draw blocks in frame updating and set a delay to move down falling piece
+    void Update () {
         if (delay < gameController.maxDelay)
         {
             delay++;
         } else
         {
             delay = 0;
-            DownActive();
+            DownActive("IA");
+            DownActive("player");
         }
         DrawBlocks();
     }
 
     #region CONTROLLERS
     
+    // blockOwner: label of player who wants to move piece
     // Move falling piece at left, check first if some blocks are there
-    public void MoveLeft()
+    public void MoveLeft(string blockOwner)
     {
         bool isBlocked = false;
 
@@ -65,9 +68,9 @@ public class MatrixScript : MonoBehaviour {
             {
                 if (cells[j, i] != null)
                 {
-                    if (cells[j, i].active == 1)
+                    if (cells[j, i].active == 1 & cells[j, i].owner.Equals(blockOwner))
                     {
-                        if (j - 1 == -1 || IsCellUse(j - 1, i))
+                        if (j - 1 == -1 || IsCellUse(j - 1, i, blockOwner))
                         {
                             isBlocked = true;
                             break;
@@ -84,7 +87,7 @@ public class MatrixScript : MonoBehaviour {
             {
                 for (int j = 0; j < columns; j++)
                 {
-                    if (cells[j, i] != null && cells[j, i].active == 1)
+                    if (cells[j, i] != null && cells[j, i].active == 1 & cells[j, i].owner.Equals(blockOwner))
                     {
                         cells[j - 1, i] = cells[j, i];
                         cells[j, i] = null;
@@ -94,8 +97,9 @@ public class MatrixScript : MonoBehaviour {
         }
     }
 
+    // blockOwner: label of player who wants to move piece
     // Move falling piece at right, check first if some blocks are there
-    public void MoveRight()
+    public void MoveRight(string blockOwner)
     {
         bool isBlocked = false;
 
@@ -105,9 +109,9 @@ public class MatrixScript : MonoBehaviour {
             {
                 if (cells[j, i] != null)
                 {
-                    if (cells[j, i].active == 1)
+                    if (cells[j, i].active == 1 & cells[j, i].owner.Equals(blockOwner))
                     {
-                        if (j + 1 == columns || IsCellUse(j + 1, i))
+                        if (j + 1 == columns || IsCellUse(j + 1, i, blockOwner))
                         {
                             isBlocked = true;
                             break;
@@ -124,7 +128,7 @@ public class MatrixScript : MonoBehaviour {
             {
                 for (int j = columns - 1; j > -1; j--)
                 {
-                    if (cells[j, i] != null && cells[j, i].active == 1)
+                    if (cells[j, i] != null && cells[j, i].active == 1 & cells[j, i].owner.Equals(blockOwner))
                     {
                         cells[j + 1, i] = cells[j, i];
                         cells[j, i] = null;
@@ -136,13 +140,19 @@ public class MatrixScript : MonoBehaviour {
 
     // coorX: cordinate for X axis or columns
     // coorY: cordinate for Y axis or rows
+    // blockOwner: label of player who wants to move piece
     // Check if a cell is ocupied by a block
-    bool IsCellUse(int coorX, int coorY)
+    bool IsCellUse(int coorX, int coorY, string owner)
     {
         if (cells[coorX, coorY] == null)
             return false;
         else
-            return (cells[coorX, coorY].value == 1 & cells[coorX, coorY].active == 0);
+        {
+            if (cells[coorX, coorY].owner != owner)
+                return true;
+            else
+                return (cells[coorX, coorY].value == 1 & cells[coorX, coorY].active == 0);
+        }
     }
     
     // deletedRow: number of row completed
@@ -166,23 +176,50 @@ public class MatrixScript : MonoBehaviour {
     }
 
     // targetMatrix: Matrix reference to switch falling piece
+    // blockOwner: label of player who wants to change piece
     // Switch piece to another matrix or game area.
-    public void ChangeGameArea(MatrixScript targetMatrix)
+    // return: true if the change area can be done
+    public bool ChangeGameArea(MatrixScript targetMatrix, string blockOwner)
     {
+        bool isBlocked = false;
+
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < columns; j++)
             {
                 if (cells[j, i] != null)
                 {
-                    if (cells[j, i].active == 1)
+                    if (cells[j, i].active == 1 & cells[j, i].owner.Equals(blockOwner))
                     {
-                        targetMatrix.CreateBlock(cells[j, i], j, i);
-                        cells[j, i] = null;
+                        if (targetMatrix.cells[j, i] != null && targetMatrix.cells[j, i].value == 1)
+                        {
+                            isBlocked = true;
+                            break;
+                        }
                     }
                 }
             }
         }
+
+        if (!isBlocked)
+        {
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < columns; j++)
+                {
+                    if (cells[j, i] != null)
+                    {
+                        if (cells[j, i].active == 1 & cells[j, i].owner.Equals(blockOwner))
+                        {
+                            targetMatrix.CreateBlock(cells[j, i], j, i);
+                            cells[j, i] = null;
+                        }
+                    }
+                }
+            }
+        }
+
+        return !isBlocked;
     }
 
     //Rotate game areas drawing
@@ -204,14 +241,15 @@ public class MatrixScript : MonoBehaviour {
             cells[x, y] = null;
         }
     }
-    
+
     #endregion
 
     #region GAME
 
+    // blockOwner: label of player, his blocks will move down
     // Down the blocks of falling piece
-    public void DownActive()
-    {
+    public void DownActive(string blockOwner)
+    {        
         bool isLanding = false;
 
         for (int i = 0; i < rows; i++)
@@ -220,9 +258,9 @@ public class MatrixScript : MonoBehaviour {
             {
                 if (cells[j, i] != null)
                 {
-                    if (cells[j, i].active == 1)
+                    if (cells[j, i].active == 1 & cells[j, i].owner.Equals(blockOwner))
                     {
-                        if (IsCellUse(j, i - 1))
+                        if (IsCellUse(j, i - 1, blockOwner))
                         {
                             isLanding = true;
                         }
@@ -239,7 +277,7 @@ public class MatrixScript : MonoBehaviour {
                 {
                     if (cells[j, i] != null & (i - 1 >= 0))
                     {
-                        if (cells[j, i].active == 1)
+                        if (cells[j, i].active == 1 & cells[j, i].owner.Equals(blockOwner))
                         {
                             cells[j, i - 1] = cells[j, i];
                             cells[j, i] = null;
@@ -254,7 +292,7 @@ public class MatrixScript : MonoBehaviour {
         }
 
         if (isLanding)
-            LandPiece();
+            LandPiece(blockOwner);
     }
 
     // penaltiesBlocks: blocks of piece that fall in wrong area
@@ -284,20 +322,22 @@ public class MatrixScript : MonoBehaviour {
         for (int m = 0; m < otherMatrixs.Length; m++)
         {
             int randomColumn = UnityEngine.Random.Range(0, 9);
-            for (int j = rows - 2; j >= 0; j--)
+            for (int j = 0; j < rows; j++)
             {
                 Block checkBlock = otherMatrixs[m].cells[randomColumn, j];
-                if (checkBlock != null && checkBlock.value == 1)
+                if (checkBlock == null)
                 {
                     Block penaltyBlocks = new Block(1, 0, areaColor);
-                    otherMatrixs[m].CreateBlock(penaltyBlocks, randomColumn, j + 1);
+                    otherMatrixs[m].CreateBlock(penaltyBlocks, randomColumn, j);
                     break;
-                } else
+                }
+                else
                 {
-                    if (j - 1 == -1)
+                    if (j + 1 < rows & checkBlock.value == 1)
                     {
                         Block penaltyBlocks = new Block(1, 0, areaColor);
-                        otherMatrixs[m].CreateBlock(penaltyBlocks, randomColumn, j);
+                        otherMatrixs[m].CreateBlock(penaltyBlocks, randomColumn, j + 1);
+                        break;
                     }
                 }
             }
@@ -324,8 +364,9 @@ public class MatrixScript : MonoBehaviour {
         }
     }
 
+    // blockOwner: label of player who land piece
     // When a piece is landing the blocks are marked as inactive or divide if it's not of color area
-    void LandPiece()
+    void LandPiece(string blockOwner)
     {
         bool isPenalty = false;
         int penalties = 0;
@@ -337,7 +378,7 @@ public class MatrixScript : MonoBehaviour {
             {
                 if (cells[j, i] != null)
                 {
-                    if (cells[j, i].active == 1)
+                    if (cells[j, i].active == 1 & cells[j, i].owner.Equals(blockOwner))
                     {
                         if (cells[j, i].color != areaColor)
                         {
@@ -362,7 +403,10 @@ public class MatrixScript : MonoBehaviour {
         else
             CheckFullRows();
 
-        spawn.GetPreviewPiece();
+        if (blockOwner.Equals("player"))
+            spawn.GetPreviewPiece();
+        else
+            spawnIA.GetPreviewPiece();
     }
 
     // Random blocks are generate in columns, number of rows depends on difficulty
@@ -414,7 +458,9 @@ public class MatrixScript : MonoBehaviour {
     public void CreateBlock(Block block, int coorX, int coorY)
     {
         if (cells[coorX, coorY] == null || cells[coorX, coorY].value == 0)
+        {
             cells[coorX, coorY] = block;
+        }
     }
 
     // Draw the blocks, set it matrix holder, x and y axis.

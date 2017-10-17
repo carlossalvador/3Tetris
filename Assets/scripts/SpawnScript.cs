@@ -14,11 +14,14 @@ public class SpawnScript : MonoBehaviour {
     public NextPieceScript previewMatrix;
 
     // This reference is use to reset the active matrix
-    public GameControllerScript gameController;
+    public PlayerControllerScript playerController;
 
     // Store the piece generated in next piece matrix
     private int randomPiece;
     private int randomColor;
+
+    // Label for owner of this spawn point
+    public string owner;
 
     // Set pieces patrons and generate first piece in preview and spawn point
     void Start () {
@@ -81,13 +84,13 @@ public class SpawnScript : MonoBehaviour {
             {
                 if (intPieces[randomPiece, i, j] == 1)
                 {
-                    Block block = new Block(1, 1, randomColor);
+                    Block block = new Block(1, 1, randomColor, owner);
                     mainMatrix.CreateBlock(block, j + 4, 16 - i);
                 }
             }
         }
 
-        gameController.ReturnSpawnArea();
+        playerController.ReturnSpawnArea();
         previewMatrix.DeletePiece();
         NewPiece();
     }
@@ -104,7 +107,7 @@ public class SpawnScript : MonoBehaviour {
             {
                 if (intPieces[randomPiece, i, j] == 1)
                 {
-                    Block block = new Block(1, 1, randomColor);
+                    Block block = new Block(1, 1, randomColor, owner);
                     previewMatrix.CreateBlock(block, j, 4 - i);
                 }
             }
