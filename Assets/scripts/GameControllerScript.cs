@@ -26,6 +26,7 @@ public class GameControllerScript : MonoBehaviour {
     private bool readyRight;
     private bool readyChangeGameArea;
     private bool readyDown;
+    private bool readyRotate;
     // Number of rows with random pieces on game start
     public int startRows;
     
@@ -83,6 +84,11 @@ public class GameControllerScript : MonoBehaviour {
         {
             readyChangeGameArea = true;
         }
+
+        if (Input.GetKeyDown("r"))
+        {
+            readyRotate = true;
+        }
         
         if (controlDelay < maxControlDelay)
             controlDelay++;
@@ -114,20 +120,29 @@ public class GameControllerScript : MonoBehaviour {
                 currentMatrix = nextMatrix;
                 readyChangeGameArea = false;
             }
-        }
 
+            if (readyRotate)
+            {
+                foreach (var matrix in matrixCollection)
+                {
+                    matrix.RotateGameArea();
+                }
+                readyRotate = false;
+            }
+        }
+        
         CheckGameOver();
     }
 
     // When a piece lands, middle area (spawn point) is set like active area
-    public void returnSpawnArea()
+    public void ReturnSpawnArea()
     {
         currentMatrix = 1;
     }
 
     // addScore: points to be added
     // Add score and update message in UI
-    public void updateScore(int addScore)
+    public void UpdateScore(int addScore)
     {
         score += addScore;
         scoreText.text = score.ToString();

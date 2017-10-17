@@ -87,7 +87,7 @@ public class SpawnScript : MonoBehaviour {
             }
         }
 
-        gameController.returnSpawnArea();
+        gameController.ReturnSpawnArea();
         previewMatrix.DeletePiece();
         NewPiece();
     }

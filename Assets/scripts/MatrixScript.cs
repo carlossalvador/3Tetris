@@ -12,7 +12,8 @@ public class MatrixScript : MonoBehaviour {
     // Offsets for draw in screen
     public float offsetX;
     public float offsetY;
-    private float scale = 0.333f;
+    private float scaleX = 0.333f;
+    private float scaleY = 0.333f;
 
     // Delay to move falling piece
     private int delay = 0;
@@ -184,6 +185,14 @@ public class MatrixScript : MonoBehaviour {
         }
     }
 
+    //Rotate game areas drawing
+    public void RotateGameArea()
+    {
+        scaleY = -(scaleY);
+        offsetY = -(offsetY);
+        ReDrawBlocks();
+    }
+    
     #endregion
 
     #region GAME
@@ -375,7 +384,7 @@ public class MatrixScript : MonoBehaviour {
                     cells[j, i] = null;
                 }
                 MoveDownRows(i);
-                gameController.updateScore(1);
+                gameController.UpdateScore(1);
                 RemovePenaltyBlocks();
                 i--;
             }
@@ -450,14 +459,30 @@ public class MatrixScript : MonoBehaviour {
     // position in X axis in sreen add scale of sprites and offset
     float PositionX(int coordinate)
     {
-        return coordinate * scale + offsetX;
+        return coordinate * scaleX + offsetX;
     }
 
     // coordinate: Y axis in screen
     // position in Y axis in sreen add scale of sprites and offset
     float PositionY(int coordinate)
     {
-        return coordinate * scale + offsetY;
+        return coordinate * scaleY + offsetY;
+    }
+
+    //Move blocks to mirror Y axis
+    void ReDrawBlocks()
+    {
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < columns; j++)
+            {
+                GameObject cell = cellsObjects[j, i];
+                if (cell != null)
+                {
+                    cell.transform.SetPositionAndRotation(new Vector3(cell.transform.position.x, -cell.transform.position.y), Quaternion.identity);
+                }
+            }
+        }
     }
 
     #endregion
