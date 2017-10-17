@@ -192,6 +192,18 @@ public class MatrixScript : MonoBehaviour {
         offsetY = -(offsetY);
         ReDrawBlocks();
     }
+
+    // x: x axis of clicked block
+    // y: y axis of clicked block
+    // Check if block in coordinates given is active and delete it if true
+    public void DeleteBlockOnClick(int x, int y)
+    {
+        if (cells[x, y] != null && cells[x,y].active == 0)
+        {
+            Destroy(cellsObjects[x, y]);
+            cells[x, y] = null;
+        }
+    }
     
     #endregion
 
@@ -405,7 +417,8 @@ public class MatrixScript : MonoBehaviour {
             cells[coorX, coorY] = block;
     }
 
-    // Draw the blocks and delete blocks with zero value
+    // Draw the blocks, set it matrix holder, x and y axis.
+    // Erase blocks with zero value or null
     public void DrawBlocks()
     {
         for (int i = 0; i < rows; i++)
@@ -417,6 +430,10 @@ public class MatrixScript : MonoBehaviour {
                     if (cellsObjects[j, i] == null)
                     {
                         cellsObjects[j, i] = Instantiate(blockPrefab, new Vector3(PositionX(j), PositionY(i), 0), Quaternion.identity);
+                        BlockControllerScript blockScript = cellsObjects[j, i].GetComponent<BlockControllerScript>();
+                        blockScript.SetMatrixHolder(this);
+                        blockScript.SetXAxis(j);
+                        blockScript.SetYAxis(i);
                         ColorBlocks(cells[j, i], cellsObjects[j, i]);
                     }
                 }
@@ -424,8 +441,6 @@ public class MatrixScript : MonoBehaviour {
                 {
                     Destroy(cellsObjects[j, i]);
                 }
-
-
             }
         }
     }
